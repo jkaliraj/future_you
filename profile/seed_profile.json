@@ -1,0 +1,55 @@
+{
+  "user_id": "demo_user",
+  "name": "Alex Chen",
+  "profile_version": "2.0",
+  "last_updated": "2026-04-08T10:00:00Z",
+
+  "communication_style": {
+    "tone": "professional yet warm",
+    "signature": "Best, Alex",
+    "average_reply_length": "3-5 sentences",
+    "uses_emojis": false,
+    "response_speed": {
+      "vip_contacts": "within 1 hour",
+      "colleagues": "within 4 hours",
+      "unknown_senders": "next business day"
+    }
+  },
+
+  "calendar_preferences": {
+    "preferred_meeting_days": ["Tuesday", "Wednesday", "Thursday"],
+    "avoid_times": ["Monday 9-11 AM", "Friday after 3 PM"],
+    "max_meetings_per_day": 4,
+    "buffer_between_meetings_mins": 15,
+    "focus_blocks": ["Daily 10 AM - 12 PM"],
+    "auto_accept_from": ["manager@company.com", "cto@company.com"]
+  },
+
+  "delegation_rules": {
+    "reports_and_docs": "teammate1@company.com",
+    "client_escalations": "manager@company.com",
+    "technical_issues": "devlead@company.com"
+  },
+
+  "priority_contacts": [
+    "ceo@company.com",
+    "top-client@gmail.com",
+    "manager@company.com",
+    "cto@company.com"
+  ],
+
+  "hard_limits": [
+    "Never commit to budget decisions",
+    "Never share confidential folders",
+    "Always flag legal or contract emails for human review",
+    "Never delete any emails or files",
+    "Never respond to emails about hiring or termination"
+  ],
+
+  "work_hours": {
+    "timezone": "Asia/Kolkata",
+    "start": "09:00",
+    "end": "18:30",
+    "active_days": ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"]
+  }
+}

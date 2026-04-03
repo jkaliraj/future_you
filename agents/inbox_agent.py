@@ -1,13 +1,15 @@
 """Inbox Agent — handles all email-related events."""
 
 from google.adk.agents import Agent
+from mcp_server.gmail_tools import gmail_tools
 
 
 def create_inbox_agent() -> Agent:
-    """Create the Inbox sub-agent for Gmail operations."""
+    """Create the Inbox sub-agent for Gmail operations with MCP tools."""
     return Agent(
         name="inbox_agent",
         model="gemini-2.5-flash",
+        tools=gmail_tools,
         instruction="""You are the Inbox Agent of FutureYou.
 You handle all email-related events on behalf of the user.
 

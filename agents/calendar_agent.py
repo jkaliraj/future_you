@@ -1,13 +1,15 @@
 """Calendar Agent — handles all scheduling-related events."""
 
 from google.adk.agents import Agent
+from mcp_server.calendar_tools import calendar_tools
 
 
 def create_calendar_agent() -> Agent:
-    """Create the Calendar sub-agent for Google Calendar operations."""
+    """Create the Calendar sub-agent for Google Calendar operations with MCP tools."""
     return Agent(
         name="calendar_agent",
         model="gemini-2.5-flash",
+        tools=calendar_tools,
         instruction="""You are the Calendar Agent of FutureYou.
 You handle all calendar and scheduling events on behalf of the user.
 

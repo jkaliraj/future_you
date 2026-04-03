@@ -1,18 +1,21 @@
 """ADK Web entry point for FutureYou.
 
-This module exposes the root_agent for `adk web` command.
-Run with: adk web agent
-Or: adk web .
+Run from the project root:
+    adk web .
 
-The ADK web UI provides an interactive chat interface to talk to
-the FutureYou Commander agent directly.
+The ADK web UI will discover this app as 'futureyou_app' and
+provide an interactive chat interface to the Commander agent.
 """
 
 import os
+import sys
 
 # Force Vertex AI backend (ADC auth, no API key needed)
 os.environ.setdefault("GOOGLE_GENAI_USE_VERTEXAI", "TRUE")
 os.environ.setdefault("GOOGLE_CLOUD_LOCATION", "us-central1")
+
+# Add parent directory to path so we can import project modules
+sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 from google.adk.agents import Agent
 from mcp_server.gmail_tools import gmail_tools

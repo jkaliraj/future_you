@@ -17,6 +17,7 @@ from db.firestore import (
 )
 from google.adk.runners import Runner
 from google.adk.sessions import InMemorySessionService
+from google.genai import types
 import uuid
 from datetime import datetime, timedelta
 
@@ -128,18 +129,23 @@ async def trigger_event(req: TriggerEventRequest):
         user_id=req.user_id,
     )
 
-    prompt = f"""Mode: {mode}.
+    prompt_text = f"""Mode: {mode}.
 Handle this {req.event_type} event:
 {req.event_data}
 
 Remember: if mode is dry-run, describe what you WOULD do but do NOT execute tools.
 Provide your decision, action, reasoning, and confidence score."""
 
+    user_message = types.Content(
+        role="user",
+        parts=[types.Part.from_text(prompt_text)],
+    )
+
     result_text = ""
     async for event in runner.run_async(
         user_id=req.user_id,
         session_id=adk_session.id,
-        new_message=prompt,
+        new_message=user_message,
     ):
         if event.is_final_response():
             result_text = event.content.parts[0].text if event.content and event.content.parts else str(event.content)

@@ -9,6 +9,7 @@ from db.firestore import (
     get_decisions,
     save_decision,
     get_session,
+    get_active_session,
     save_session,
     update_session,
     save_event,
@@ -45,9 +46,10 @@ class DeactivateRequest(BaseModel):
 
 class TriggerEventRequest(BaseModel):
     user_id: str
-    session_id: str
+    session_id: str | None = None
     event_type: str
-    event_data: dict
+    event_data: dict | None = None
+    payload: dict | None = None
 
 
 class OverrideRequest(BaseModel):
@@ -95,11 +97,21 @@ async def activate(req: ActivateRequest):
 @router.post("/trigger-event")
 async def trigger_event(req: TriggerEventRequest):
     """Simulate an incoming event. Commander agent processes it and returns a decision."""
-    session = get_session(req.user_id, req.session_id)
+    # Accept event_data or payload (alias)
+    event_data = req.event_data or req.payload
+    if not event_data:
+        raise HTTPException(status_code=400, detail="Provide event_data or payload.")
+
+    # Auto-find active session if session_id not provided
+    if req.session_id:
+        session = get_session(req.user_id, req.session_id)
+    else:
+        session = get_active_session(req.user_id)
     if not session:
-        raise HTTPException(status_code=404, detail="Session not found.")
+        raise HTTPException(status_code=404, detail="No active session found. Call /activate first.")
     if session.get("status") != "active":
         raise HTTPException(status_code=400, detail="Session is not active.")
+    session_id = session["session_id"]
 
     mode = session.get("mode", "dry-run")
 
@@ -108,7 +120,7 @@ async def trigger_event(req: TriggerEventRequest):
     event_record = {
         "event_id": event_id,
         "event_type": req.event_type,
-        "event_data": req.event_data,
+        "event_data": event_data,
         "status": "processing",
         "assigned_agent": f"{req.event_type}_agent",
         "created_at": datetime.utcnow().isoformat(),
@@ -131,7 +143,7 @@ async def trigger_event(req: TriggerEventRequest):
 
     prompt_text = f"""Mode: {mode}.
 Handle this {req.event_type} event:
-{req.event_data}
+{event_data}
 
 Remember: if mode is dry-run, describe what you WOULD do but do NOT execute tools.
 Provide your decision, action, reasoning, and confidence score."""
@@ -153,10 +165,10 @@ Provide your decision, action, reasoning, and confidence score."""
     # Save decision
     decision = {
         "decision_id": f"dec_{uuid.uuid4().hex[:6]}",
-        "session_id": req.session_id,
+        "session_id": session_id,
         "agent_name": f"{req.event_type}_agent",
         "event_type": req.event_type,
-        "event_summary": str(req.event_data),
+        "event_summary": str(event_data),
         "action_taken": result_text,
         "reasoning": "Based on Work Personality Profile",
         "confidence": 0.9,

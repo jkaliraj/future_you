@@ -58,6 +58,24 @@ def get_session(user_id: str, session_id: str) -> dict | None:
     return None
 
 
+def get_active_session(user_id: str) -> dict | None:
+    """Find the most recent active session for a user."""
+    db = _get_db()
+    docs = (
+        db.collection("users")
+        .document(user_id)
+        .collection("sessions")
+        .where(filter=firestore.FieldFilter("status", "==", "active"))
+        .stream()
+    )
+    sessions = [doc.to_dict() for doc in docs]
+    if not sessions:
+        return None
+    # Return most recently started session
+    sessions.sort(key=lambda s: s.get("started_at", ""), reverse=True)
+    return sessions[0]
+
+
 def update_session(user_id: str, session_id: str, updates: dict) -> None:
     """Update a session (e.g., mark as deactivated)."""
     db = _get_db()

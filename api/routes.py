@@ -138,7 +138,7 @@ Provide your decision, action, reasoning, and confidence score."""
 
     user_message = types.Content(
         role="user",
-        parts=[types.Part.from_text(prompt_text)],
+        parts=[types.Part(text=prompt_text)],
     )
 
     result_text = ""

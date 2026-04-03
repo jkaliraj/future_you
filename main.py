@@ -6,6 +6,14 @@ and acts as your digital twin when you're unavailable.
 Team: Phantom Ops
 """
 
+import os
+
+# Force ADK to use Vertex AI (ADC auth) instead of Gemini API key
+os.environ.setdefault("GOOGLE_GENAI_USE_VERTEXAI", "TRUE")
+os.environ.setdefault("GOOGLE_CLOUD_LOCATION", "us-central1")
+# GOOGLE_CLOUD_PROJECT must be set in environment or here:
+# os.environ.setdefault("GOOGLE_CLOUD_PROJECT", "futureyou-agent")
+
 from fastapi import FastAPI
 from api.routes import router
 

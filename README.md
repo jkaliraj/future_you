@@ -216,11 +216,13 @@ export GOOGLE_CLOUD_PROJECT=futureyou-agent
 export GOOGLE_GENAI_USE_VERTEXAI=TRUE
 export GOOGLE_CLOUD_LOCATION=us-central1
 
-# Run FastAPI server
+# Run combined server (ADK Web UI + REST API on same port)
 python -m uvicorn main:app --host 0.0.0.0 --port 8080
+# → ADK Web UI: http://localhost:8080
+# → REST API:   http://localhost:8080/api/*
 ```
 
-### ADK Web UI (Interactive Chat)
+### Standalone ADK Web UI (alternative)
 
 ```bash
 export PATH="$HOME/.local/bin:$PATH"
@@ -236,7 +238,7 @@ adk web . --allow_origins="*"
 ### Step 1: Onboard (Load Profile)
 
 ```bash
-curl -s -X POST http://localhost:8080/onboard \
+curl -s -X POST http://localhost:8080/api/onboard \
   -H "Content-Type: application/json" \
   -d '{"user_id":"demo-user"}' | python3 -m json.tool
 ```
@@ -244,7 +246,7 @@ curl -s -X POST http://localhost:8080/onboard \
 ### Step 2: Activate Session (Go Offline)
 
 ```bash
-curl -s -X POST http://localhost:8080/activate \
+curl -s -X POST http://localhost:8080/api/activate \
   -H "Content-Type: application/json" \
   -d '{
     "user_id": "demo-user",
@@ -258,7 +260,7 @@ curl -s -X POST http://localhost:8080/activate \
 
 **Email from CEO (priority contact):**
 ```bash
-curl -s -X POST http://localhost:8080/trigger-event \
+curl -s -X POST http://localhost:8080/api/trigger-event \
   -H "Content-Type: application/json" \
   -d '{
     "user_id": "demo-user",
@@ -273,7 +275,7 @@ curl -s -X POST http://localhost:8080/trigger-event \
 
 **Calendar invite:**
 ```bash
-curl -s -X POST http://localhost:8080/trigger-event \
+curl -s -X POST http://localhost:8080/api/trigger-event \
   -H "Content-Type: application/json" \
   -d '{
     "user_id": "demo-user",
@@ -289,7 +291,7 @@ curl -s -X POST http://localhost:8080/trigger-event \
 
 **Task deadline:**
 ```bash
-curl -s -X POST http://localhost:8080/trigger-event \
+curl -s -X POST http://localhost:8080/api/trigger-event \
   -H "Content-Type: application/json" \
   -d '{
     "user_id": "demo-user",
@@ -304,7 +306,7 @@ curl -s -X POST http://localhost:8080/trigger-event \
 
 **File request:**
 ```bash
-curl -s -X POST http://localhost:8080/trigger-event \
+curl -s -X POST http://localhost:8080/api/trigger-event \
   -H "Content-Type: application/json" \
   -d '{
     "user_id": "demo-user",
@@ -318,19 +320,19 @@ curl -s -X POST http://localhost:8080/trigger-event \
 ### Step 4: View Decisions
 
 ```bash
-curl -s http://localhost:8080/decisions/demo-user | python3 -m json.tool
+curl -s http://localhost:8080/api/decisions/demo-user | python3 -m json.tool
 ```
 
 ### Step 5: View Profile
 
 ```bash
-curl -s http://localhost:8080/profile/demo-user | python3 -m json.tool
+curl -s http://localhost:8080/api/profile/demo-user | python3 -m json.tool
 ```
 
 ### Step 6: Deactivate (Come Back Online)
 
 ```bash
-curl -s -X POST http://localhost:8080/deactivate \
+curl -s -X POST http://localhost:8080/api/deactivate \
   -H "Content-Type: application/json" \
   -d '{
     "user_id": "demo-user",
@@ -366,7 +368,9 @@ gcloud run deploy futureyou \
 # 4. Test the deployed URL
 URL="https://futureyou-XXXXX-uc.a.run.app"
 curl -s $URL/health
-curl -s -X POST $URL/onboard -H "Content-Type: application/json" \
+# ADK Web UI: open $URL in browser
+# REST API:
+curl -s -X POST $URL/api/onboard -H "Content-Type: application/json" \
   -d '{"user_id":"demo-user"}' | python3 -m json.tool
 ```
 

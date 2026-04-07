@@ -4,7 +4,7 @@
 
 A **multi-agent AI productivity assistant** built on **Google Agent Development Kit (ADK)** and **Gemini 2.5 Flash** that learns how you work and autonomously handles your emails, meetings, tasks, and documents while you're offline — making real judgment calls based on your Work Personality Profile, not just sending auto-replies.
 
-*"Your AI self, working while you rest."*
+_"Your AI self, working while you rest."_
 
 ---
 
@@ -78,16 +78,16 @@ graph TB
 
 ## Tech Stack
 
-| Layer | Technology | Purpose |
-|-------|-----------|---------|
-| Agent Framework | **Google ADK** | Multi-agent orchestration, routing, tool-calling |
-| LLM | **Gemini 2.5 Flash** via Vertex AI | Reasoning, decision-making, natural language |
-| API | **FastAPI** | REST endpoints for programmatic access |
-| MCP Tools | **Custom FunctionTools** | Gmail, Calendar, Tasks, Drive operations |
-| Database | **Firestore** | Profiles, sessions, decisions, events |
-| Deployment | **Cloud Run** | Serverless production hosting |
-| Auth | **Vertex AI ADC** | Application Default Credentials |
-| UI | **ADK Web** | Built-in chat interface for interactive testing |
+| Layer           | Technology                         | Purpose                                          |
+| --------------- | ---------------------------------- | ------------------------------------------------ |
+| Agent Framework | **Google ADK**                     | Multi-agent orchestration, routing, tool-calling |
+| LLM             | **Gemini 2.5 Flash** via Vertex AI | Reasoning, decision-making, natural language     |
+| API             | **FastAPI**                        | REST endpoints for programmatic access           |
+| MCP Tools       | **Custom FunctionTools**           | Gmail, Calendar, Tasks, Drive operations         |
+| Database        | **Firestore**                      | Profiles, sessions, decisions, events            |
+| Deployment      | **Cloud Run**                      | Serverless production hosting                    |
+| Auth            | **Vertex AI ADC**                  | Application Default Credentials                  |
+| UI              | **ADK Web**                        | Built-in chat interface for interactive testing  |
 
 ---
 
@@ -111,12 +111,12 @@ graph TB
 
 ### MCP Tools (16 total)
 
-| Agent | Tools | Operations |
-|-------|-------|-----------|
-| **Inbox Agent** | `gmail_tools` | `read_emails`, `send_email`, `label_email`, `search_emails` |
-| **Calendar Agent** | `calendar_tools` | `get_events`, `create_event`, `update_event`, `check_availability` |
-| **Task Agent** | `tasks_tools` | `list_tasks`, `create_task`, `update_task`, `complete_task` |
-| **Knowledge Agent** | `drive_tools` | `search_files`, `get_file`, `share_file`, `create_file` |
+| Agent               | Tools            | Operations                                                         |
+| ------------------- | ---------------- | ------------------------------------------------------------------ |
+| **Inbox Agent**     | `gmail_tools`    | `read_emails`, `send_email`, `label_email`, `search_emails`        |
+| **Calendar Agent**  | `calendar_tools` | `get_events`, `create_event`, `update_event`, `check_availability` |
+| **Task Agent**      | `tasks_tools`    | `list_tasks`, `create_task`, `update_task`, `complete_task`        |
+| **Knowledge Agent** | `drive_tools`    | `search_files`, `get_file`, `share_file`, `create_file`            |
 
 All tools are implemented as **ADK `FunctionTool`** wrappers that integrate with the agents via the MCP protocol.
 
@@ -130,7 +130,7 @@ The profile drives all autonomous decisions:
 {
   "communication_style": {
     "tone": "professional yet warm",
-    "signature": "Best, Alex",
+    "signature": "Best, Kali",
     "avg_reply_length": "3-5 sentences"
   },
   "calendar_preferences": {
@@ -259,6 +259,7 @@ curl -s -X POST http://localhost:8080/api/activate \
 ### Step 3: Trigger Events
 
 **Email from CEO (priority contact):**
+
 ```bash
 curl -s -X POST http://localhost:8080/api/trigger-event \
   -H "Content-Type: application/json" \
@@ -274,6 +275,7 @@ curl -s -X POST http://localhost:8080/api/trigger-event \
 ```
 
 **Calendar invite:**
+
 ```bash
 curl -s -X POST http://localhost:8080/api/trigger-event \
   -H "Content-Type: application/json" \
@@ -290,6 +292,7 @@ curl -s -X POST http://localhost:8080/api/trigger-event \
 ```
 
 **Task deadline:**
+
 ```bash
 curl -s -X POST http://localhost:8080/api/trigger-event \
   -H "Content-Type: application/json" \
@@ -305,6 +308,7 @@ curl -s -X POST http://localhost:8080/api/trigger-event \
 ```
 
 **File request:**
+
 ```bash
 curl -s -X POST http://localhost:8080/api/trigger-event \
   -H "Content-Type: application/json" \
@@ -378,17 +382,17 @@ curl -s -X POST $URL/api/onboard -H "Content-Type: application/json" \
 
 ## Key Features
 
-| Feature | Description |
-|---------|-------------|
-| **Multi-Agent Routing** | Commander classifies events and delegates to specialized sub-agents |
-| **16 MCP Tools** | Gmail, Calendar, Tasks, Drive — all wired to agents via FunctionTool |
-| **Work Personality Profile** | JSON-based profile drives all autonomous decisions |
-| **Dry-Run Mode** | Agent explains what it WOULD do without executing actions |
-| **Hard Limits** | Enforced rules that the agent NEVER violates (budget, legal, hiring) |
-| **Decision Log** | Every action logged with reasoning and confidence score |
-| **Human Override** | User can review and override any decision |
-| **ADK Web UI** | Built-in interactive chat for live testing |
-| **Firestore Persistence** | Profiles, sessions, decisions stored across restarts |
+| Feature                      | Description                                                          |
+| ---------------------------- | -------------------------------------------------------------------- |
+| **Multi-Agent Routing**      | Commander classifies events and delegates to specialized sub-agents  |
+| **16 MCP Tools**             | Gmail, Calendar, Tasks, Drive — all wired to agents via FunctionTool |
+| **Work Personality Profile** | JSON-based profile drives all autonomous decisions                   |
+| **Dry-Run Mode**             | Agent explains what it WOULD do without executing actions            |
+| **Hard Limits**              | Enforced rules that the agent NEVER violates (budget, legal, hiring) |
+| **Decision Log**             | Every action logged with reasoning and confidence score              |
+| **Human Override**           | User can review and override any decision                            |
+| **ADK Web UI**               | Built-in interactive chat for live testing                           |
+| **Firestore Persistence**    | Profiles, sessions, decisions stored across restarts                 |
 
 ---
 
@@ -398,4 +402,4 @@ MIT
 
 ---
 
-*Built with Google ADK, Gemini 2.5 Flash, and Firestore for the Google Gen AI Academy APAC Hackathon.*
+_Built with Google ADK, Gemini 2.5 Flash, and Firestore for the Google Gen AI Academy APAC Hackathon._

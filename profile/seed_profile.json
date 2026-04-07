@@ -1,12 +1,13 @@
 {
   "user_id": "demo_user",
-  "name": "Alex Chen",
+  "name": "Kali",
+  "email": "kali@googler.com",
   "profile_version": "2.0",
   "last_updated": "2026-04-08T10:00:00Z",
 
   "communication_style": {
     "tone": "professional yet warm",
-    "signature": "Best, Alex",
+    "signature": "Best, Kali",
     "average_reply_length": "3-5 sentences",
     "uses_emojis": false,
     "response_speed": {

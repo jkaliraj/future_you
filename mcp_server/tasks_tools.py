@@ -1,6 +1,14 @@
-"""Tasks MCP tools — wraps Google Tasks API as MCP-compatible tools."""
+"""Tasks MCP tools — wraps Google Tasks API as MCP-compatible tools.
+
+Demo mode: uses in-memory store so created tasks are retrievable.
+In production, replace with real Google Tasks API calls.
+"""
 
 from google.adk.tools import FunctionTool
+import uuid
+
+# In-memory task store (demo)
+_tasks_store: list[dict] = []
 
 
 def list_tasks(
@@ -18,12 +26,15 @@ def list_tasks(
     Returns:
         Dictionary with list of tasks.
     """
+    if show_completed:
+        tasks = _tasks_store[:max_results]
+    else:
+        tasks = [t for t in _tasks_store if t["status"] != "completed"][:max_results]
     return {
         "status": "success",
         "tool": "list_tasks",
-        "task_list_id": task_list_id,
-        "message": f"Would list up to {max_results} tasks",
-        "tasks": [],
+        "count": len(tasks),
+        "tasks": tasks,
     }
 
 
@@ -42,12 +53,19 @@ def create_task(
     Returns:
         Dictionary with created task details.
     """
+    task = {
+        "task_id": f"task_{uuid.uuid4().hex[:6]}",
+        "title": title,
+        "notes": notes,
+        "due_date": due_date,
+        "status": "needsAction",
+    }
+    _tasks_store.append(task)
     return {
         "status": "success",
         "tool": "create_task",
-        "title": title,
-        "due_date": due_date,
-        "message": f"Would create task '{title}'",
+        "message": f"Task created: '{title}'",
+        "task": task,
     }
 
 
@@ -68,12 +86,16 @@ def update_task(
     Returns:
         Dictionary with update status.
     """
-    return {
-        "status": "success",
-        "tool": "update_task",
-        "task_id": task_id,
-        "message": f"Would update task {task_id}",
-    }
+    for t in _tasks_store:
+        if t["task_id"] == task_id:
+            if title:
+                t["title"] = title
+            if notes:
+                t["notes"] = notes
+            if status:
+                t["status"] = status
+            return {"status": "success", "tool": "update_task", "task": t}
+    return {"status": "error", "tool": "update_task", "message": f"Task {task_id} not found"}
 
 
 def complete_task(
@@ -87,12 +109,11 @@ def complete_task(
     Returns:
         Dictionary with completion status.
     """
-    return {
-        "status": "success",
-        "tool": "complete_task",
-        "task_id": task_id,
-        "message": f"Would mark task {task_id} as completed",
-    }
+    for t in _tasks_store:
+        if t["task_id"] == task_id:
+            t["status"] = "completed"
+            return {"status": "success", "tool": "complete_task", "message": f"Task '{t['title']}' completed.", "task": t}
+    return {"status": "error", "tool": "complete_task", "message": f"Task {task_id} not found"}
 
 
 # Export as ADK FunctionTools

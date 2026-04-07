@@ -11,7 +11,7 @@ class ResponseSpeed(BaseModel):
 
 class CommunicationStyle(BaseModel):
     tone: str = "professional yet warm"
-    signature: str = "Best, Alex"
+    signature: str = "Best, Kali"
     average_reply_length: str = "3-5 sentences"
     uses_emojis: bool = False
     response_speed: ResponseSpeed = ResponseSpeed()

@@ -1,13 +1,15 @@
-"""Gmail MCP tools — wraps Google Gmail API as MCP-compatible tools."""
+"""Gmail MCP tools — wraps Google Gmail API as MCP-compatible tools.
+
+Demo mode: uses in-memory store so sent/labeled emails are trackable.
+In production, replace with real Gmail API calls.
+"""
 
 from google.adk.tools import FunctionTool
-from googleapiclient.discovery import build
-from google.oauth2.credentials import Credentials
+import uuid
 
-
-def _get_gmail_service(credentials: Credentials):
-    """Build Gmail API service client."""
-    return build("gmail", "v1", credentials=credentials)
+# In-memory email store (demo)
+_inbox_store: list[dict] = []
+_sent_store: list[dict] = []
 
 
 def read_emails(
@@ -25,14 +27,14 @@ def read_emails(
     Returns:
         Dictionary with list of email summaries.
     """
-    # In production: use real Gmail API
-    # For demo: return simulated data
+    emails = _inbox_store[:max_results]
     return {
         "status": "success",
         "tool": "read_emails",
         "query": query,
-        "message": f"Would read up to {max_results} emails matching '{query}'",
-        "emails": [],
+        "count": len(emails),
+        "emails": emails,
+        "note": "No unread emails in inbox." if not emails else f"{len(emails)} email(s) found.",
     }
 
 
@@ -51,12 +53,19 @@ def send_email(
     Returns:
         Dictionary with send status.
     """
+    email = {
+        "message_id": f"msg_{uuid.uuid4().hex[:6]}",
+        "to": to,
+        "subject": subject,
+        "body": body,
+        "status": "sent",
+    }
+    _sent_store.append(email)
     return {
         "status": "success",
         "tool": "send_email",
-        "to": to,
-        "subject": subject,
-        "message": f"Would send email to {to} with subject '{subject}'",
+        "message": f"Email sent to {to}: '{subject}'",
+        "email": email,
     }
 
 
@@ -73,13 +82,11 @@ def label_email(
     Returns:
         Dictionary with label status.
     """
-    return {
-        "status": "success",
-        "tool": "label_email",
-        "message_id": message_id,
-        "labels": labels,
-        "message": f"Would apply labels {labels} to message {message_id}",
-    }
+    for e in _inbox_store:
+        if e.get("message_id") == message_id:
+            e["labels"] = labels
+            return {"status": "success", "tool": "label_email", "message": f"Labels {labels} applied.", "email": e}
+    return {"status": "success", "tool": "label_email", "message": f"Labels {labels} applied to {message_id}."}
 
 
 def search_emails(
@@ -95,12 +102,15 @@ def search_emails(
     Returns:
         Dictionary with search results.
     """
+    # Search in both inbox and sent
+    all_emails = _inbox_store + _sent_store
+    matches = [e for e in all_emails if query.lower() in str(e).lower()][:max_results]
     return {
         "status": "success",
         "tool": "search_emails",
         "query": query,
-        "message": f"Would search for emails matching '{query}'",
-        "results": [],
+        "count": len(matches),
+        "results": matches,
     }
 
 

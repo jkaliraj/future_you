@@ -1,6 +1,14 @@
-"""Calendar MCP tools — wraps Google Calendar API as MCP-compatible tools."""
+"""Calendar MCP tools — wraps Google Calendar API as MCP-compatible tools.
+
+Demo mode: uses in-memory store so created events are retrievable.
+In production, replace with real Google Calendar API calls.
+"""
 
 from google.adk.tools import FunctionTool
+import uuid
+
+# In-memory event store (demo) — persists during the session
+_calendar_store: list[dict] = []
 
 
 def get_events(
@@ -18,12 +26,12 @@ def get_events(
     Returns:
         Dictionary with list of calendar events.
     """
+    events = _calendar_store[:max_results]
     return {
         "status": "success",
         "tool": "get_events",
-        "time_range": f"{time_min} to {time_max}",
-        "message": f"Would fetch up to {max_results} events",
-        "events": [],
+        "count": len(events),
+        "events": events,
     }
 
 
@@ -46,14 +54,21 @@ def create_event(
     Returns:
         Dictionary with created event details.
     """
-    return {
-        "status": "success",
-        "tool": "create_event",
+    event = {
+        "event_id": f"evt_{uuid.uuid4().hex[:6]}",
         "summary": summary,
         "start": start_time,
         "end": end_time,
         "attendees": attendees or [],
-        "message": f"Would create event '{summary}' from {start_time} to {end_time}",
+        "description": description,
+        "status": "confirmed",
+    }
+    _calendar_store.append(event)
+    return {
+        "status": "success",
+        "tool": "create_event",
+        "message": f"Event '{summary}' created: {start_time} to {end_time}",
+        "event": event,
     }
 
 
@@ -76,12 +91,18 @@ def update_event(
     Returns:
         Dictionary with update status.
     """
-    return {
-        "status": "success",
-        "tool": "update_event",
-        "event_id": event_id,
-        "message": f"Would update event {event_id}",
-    }
+    for evt in _calendar_store:
+        if evt["event_id"] == event_id:
+            if summary:
+                evt["summary"] = summary
+            if start_time:
+                evt["start"] = start_time
+            if end_time:
+                evt["end"] = end_time
+            if status:
+                evt["status"] = status
+            return {"status": "success", "tool": "update_event", "event": evt}
+    return {"status": "error", "tool": "update_event", "message": f"Event {event_id} not found"}
 
 
 def check_availability(
@@ -99,12 +120,17 @@ def check_availability(
     Returns:
         Dictionary with available time slots.
     """
+    # Find busy slots from in-memory store for this date
+    busy = [e for e in _calendar_store if date in e.get("start", "")]
+    busy_summaries = [f"{e['summary']} ({e['start']}–{e['end']})" for e in busy]
+    total_meetings = len(busy)
     return {
         "status": "success",
         "tool": "check_availability",
         "date": date,
-        "message": f"Would check availability on {date} from {start_hour}:00 to {end_hour}:00",
-        "available_slots": [],
+        "meetings_on_date": total_meetings,
+        "busy_slots": busy_summaries,
+        "note": f"{total_meetings} meeting(s) found. Max allowed: 4/day.",
     }
 
 

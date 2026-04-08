@@ -12,9 +12,10 @@ Team: Phantom Ops
 
 import os
 
-# Force ADK to use Vertex AI (ADC auth) instead of Gemini API key
-os.environ.setdefault("GOOGLE_GENAI_USE_VERTEXAI", "TRUE")
-os.environ.setdefault("GOOGLE_CLOUD_LOCATION", "us-central1")
+# Use API key if set, otherwise fall back to Vertex AI (ADC auth)
+if not os.environ.get("GOOGLE_API_KEY"):
+    os.environ.setdefault("GOOGLE_GENAI_USE_VERTEXAI", "TRUE")
+    os.environ.setdefault("GOOGLE_CLOUD_LOCATION", "us-central1")
 
 from google.adk.cli.fast_api import get_fast_api_app
 from api.routes import router

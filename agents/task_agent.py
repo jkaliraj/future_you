@@ -8,7 +8,7 @@ def create_task_agent() -> Agent:
     """Create the Task sub-agent for Google Tasks operations with MCP tools."""
     return Agent(
         name="task_agent",
-        model="gemini-2.0-flash",
+        model="gemini-2.5-flash",
         tools=tasks_tools,
         instruction="""You are the Task Agent of FutureYou.
 You handle all task and deadline events on behalf of the user.

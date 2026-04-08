@@ -58,6 +58,11 @@ class OverrideRequest(BaseModel):
     undo: bool = False
 
 
+class ChatRequest(BaseModel):
+    user_id: str
+    message: str
+
+
 # --- Endpoints ---
 
 @router.post("/onboard")
@@ -227,3 +232,42 @@ async def override(decision_id: str, req: OverrideRequest):
     """Human overrides a decision. Profile updated from correction."""
     override_decision(req.user_id, decision_id, req.correction)
     return {"status": "overridden", "decision_id": decision_id, "profile_updated": True}
+
+
+@router.post("/chat")
+async def chat(req: ChatRequest):
+    """Simple chat endpoint — send a message, get a response from the Commander."""
+    commander = create_commander_agent(req.user_id)
+    session_service = InMemorySessionService()
+    runner = Runner(
+        agent=commander,
+        app_name="futureyou",
+        session_service=session_service,
+    )
+
+    adk_session = await session_service.create_session(
+        app_name="futureyou",
+        user_id=req.user_id,
+    )
+
+    user_message = types.Content(
+        role="user",
+        parts=[types.Part(text=req.message)],
+    )
+
+    result_text = ""
+    async for event in runner.run_async(
+        user_id=req.user_id,
+        session_id=adk_session.id,
+        new_message=user_message,
+    ):
+        if event.is_final_response():
+            result_text = event.content.parts[0].text if event.content and event.content.parts else str(event.content)
+
+    return {"user_id": req.user_id, "message": req.message, "response": result_text}
+
+
+@router.get("/health")
+async def api_health():
+    """API health check."""
+    return {"status": "healthy", "service": "futureyou-api"}

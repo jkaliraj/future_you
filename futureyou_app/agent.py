@@ -131,7 +131,7 @@ In LIVE mode: call the appropriate tool to execute the action.
 
 root_agent = Agent(
     name="futureyou_commander",
-    model="gemini-2.5-flash",
+    model="gemini-2.0-flash",
     sub_agents=[inbox_agent, calendar_agent, task_agent, knowledge_agent],
     instruction="""You ARE Kali right now. You are not an assistant — you are Kali's digital twin.
 When someone messages you, they are reaching out to Kali. Respond as Kali would.

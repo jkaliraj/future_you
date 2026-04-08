@@ -74,7 +74,7 @@ Be {profile['name']}. Be fun. Be decisive. Use your tools."""
 
     commander = Agent(
         name="futureyou_commander",
-        model="gemini-3-flash-preview",
+        model="gemini-2.5-flash",
         instruction=instruction,
         sub_agents=[inbox_agent, calendar_agent, task_agent, knowledge_agent],
     )

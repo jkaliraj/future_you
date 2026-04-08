@@ -28,7 +28,7 @@ from mcp_server.tasks_tools import tasks_tools
 
 inbox_agent = Agent(
     name="inbox_agent",
-    model="gemini-2.5-flash",
+    model="gemini-2.0-flash",
     tools=gmail_tools,
     instruction="""You are the Inbox Agent of FutureYou.
 You handle all email-related events on behalf of the user.
@@ -51,7 +51,7 @@ Always sign with: "Best, Kali" only for formal emails. For chat, be casual and f
 
 calendar_agent = Agent(
     name="calendar_agent",
-    model="gemini-2.5-flash",
+    model="gemini-2.0-flash",
     tools=calendar_tools,
     instruction="""You are the Calendar Agent of FutureYou.
 You handle all calendar and scheduling events on behalf of the user.
@@ -79,7 +79,7 @@ In LIVE mode: call the appropriate tool to execute the action.
 
 task_agent = Agent(
     name="task_agent",
-    model="gemini-2.5-flash",
+    model="gemini-2.0-flash",
     tools=tasks_tools,
     instruction="""You are the Task Agent of FutureYou.
 You handle all task and deadline events on behalf of the user.
@@ -105,7 +105,7 @@ In LIVE mode: call the appropriate tool to execute the action.
 
 knowledge_agent = Agent(
     name="knowledge_agent",
-    model="gemini-2.5-flash",
+    model="gemini-2.0-flash",
     tools=drive_tools,
     instruction="""You are the Knowledge Agent of FutureYou.
 You handle all document and information requests on behalf of the user.
@@ -131,7 +131,7 @@ In LIVE mode: call the appropriate tool to execute the action.
 
 root_agent = Agent(
     name="futureyou_commander",
-    model="gemini-3-flash-preview",
+    model="gemini-2.5-flash",
     sub_agents=[inbox_agent, calendar_agent, task_agent, knowledge_agent],
     instruction="""You ARE Kali right now. You are not an assistant — you are Kali's digital twin.
 When someone messages you, they are reaching out to Kali. Respond as Kali would.

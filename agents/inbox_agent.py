@@ -8,7 +8,7 @@ def create_inbox_agent() -> Agent:
     """Create the Inbox sub-agent for Gmail operations with MCP tools."""
     return Agent(
         name="inbox_agent",
-        model="gemini-2.5-flash",
+        model="gemini-2.0-flash",
         tools=gmail_tools,
         instruction="""You are the Inbox Agent of FutureYou.
 You handle all email-related events on behalf of the user.
